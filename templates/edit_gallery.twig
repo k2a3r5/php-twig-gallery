@@ -1,0 +1,110 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Editeaza galerie{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="galleries.php">Galerii</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="galleries.php">Lista galerii</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        {{ session_username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="mb-0">Editeaza galeria</h2>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+                    {% if success %}
+                        <div class="alert alert-success" role="alert">
+                            {{ success }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Titlu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ gallery.title }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descriere</label>
+                            <textarea class="form-control" id="description" name="description" rows="4">{{ gallery.description }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="images" class="form-label">Adauga imagini noi (multiple)</label>
+                            <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+                            <div class="form-text">Poti adauga mai multe imagini noi la galeria existenta.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg">Actualizeaza galeria</button>
+                            <a href="galleries.php" class="btn btn-outline-secondary">Anuleaza</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Imagini curente ({{ images|length }})</h5>
+                </div>
+                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    {% if images is not empty %}
+                        <div class="row g-2">
+                            {% for img in images %}
+                                <div class="col-12">
+                                    <div class="card">
+                                        <img src="{{ img.image_path }}" class="card-img-top" alt="{{ img.alt_text }}">
+                                        <div class="card-body p-2">
+                                            <p class="card-text small mb-2">{{ img.alt_text }}</p>
+                                            <a href="delete_image.php?id={{ img.id }}&gallery_id={{ gallery.id }}" class="btn btn-danger btn-sm w-100" onclick="return confirm('Stergi aceasta imagine?');">
+                                                Sterge imagine
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Nu exista imagini in aceasta galerie.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

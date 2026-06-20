@@ -1,0 +1,81 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Galerii{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="galleries.php">Galerii</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="add_gallery.php">Adauga galerie</a>
+                </li>
+                {% if session_role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin_users.php">Administrare utilizatori</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        {{ session_username }} ({{ session_role }})
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Lista galeriilor</h1>
+
+    {% if galleries is empty %}
+        <div class="alert alert-info" role="alert">
+            Nu exista galerii. <a href="add_gallery.php" class="alert-link">Adauga prima galerie</a>.
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for gallery in galleries %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        {% if gallery.first_image_url %}
+                            <img src="{{ gallery.first_image_url }}"
+                                 class="card-img-top"
+                                 alt="{{ gallery.title }}"
+                                 style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span>Fara imagine</span>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5 class="card-title">{{ gallery.title }}</h5>
+                            <p class="card-text">{{ gallery.description }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">User ID: {{ gallery.user_id }} | {{ gallery.created_at }}</small>
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-white">
+                            <a href="gallery.php?id={{ gallery.id }}" class="btn btn-sm btn-primary">Vezi galeria</a>
+                            <a href="edit_gallery.php?id={{ gallery.id }}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="delete_gallery.php?id={{ gallery.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Stergi aceasta galerie?');">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
